@@ -1,11 +1,26 @@
 import csv
 import os
+from datetime import datetime
 
 FILE_NAME = 'expensesDatabase.csv'
 FIELDNAMES = ['date', 'amount', 'category', 'description']
 
+def getValidDate():
+    while True:
+        date = input("Enter date (YYYY-MM-DD): ").strip()
+        try:
+            entered_date = datetime.strptime(date, "%Y-%m-%d").date()
+            today = datetime.today().date()
+            if entered_date < today:
+                print("You cannot add past dates. Please try again!")
+                continue
+            return date
+        except ValueError:
+            print("Invalid date format. Please enter in YYYY-MM-DD format again! ")
+            continue
+
 def add_expense():
-    date = input("Enter date (YYYY-MM-DD): ").strip()
+    date = getValidDate()
     amount = float(input("Enter amount: "))
     category = input("Enter category: ").strip()
     description = input("Enter description: ").strip()
@@ -57,7 +72,7 @@ def filter_by_category():
     return expenses
 
 def filter_by_date():
-    target_date = input("Enter date to filter (YYYY-MM-DD): ").strip()
+    target_date = getValidDate()
 
     if not os.path.isfile(FILE_NAME) or os.stat(FILE_NAME).st_size == 0:
         print("No expenses found.")
