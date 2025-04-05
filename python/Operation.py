@@ -1,45 +1,16 @@
-import csv
-import os
 from datetime import datetime
 
+import csv
+import os
+import Utils
+
 FILE_NAME = 'expensesDatabase.csv'
-FIELDNAMES = ['date', 'amount', 'category', 'description']
-
-CATEGORIES = ["Food", "Transport", "Shopping", "Entertainment", "Utilities", "Healthcare", "Other"]
-
-def getValidDate():
-    while True:
-        date = input("Enter date (YYYY-MM-DD): ").strip()
-        try:
-            entered_date = datetime.strptime(date, "%Y-%m-%d").date()
-            today = datetime.today().date()
-            if entered_date < today:
-                print("You cannot add past dates. Please try again!")
-                continue
-            return date
-        except ValueError:
-            print("Invalid date format. Please enter in YYYY-MM-DD format again! ")
-            continue
-
-def getvalidCategory():
-    print("📋 Available Categories:")
-    for idx, cat in enumerate(CATEGORIES, start=1):
-        print(f" {idx}. {cat}")
-
-    # Convert all the categories to lower case for proper comparision
-    valid_categories = [cat.lower() for cat in CATEGORIES]
-
-    while True:
-        selected = input("Choose a category: ").strip().lower()
-        if selected in valid_categories:
-            return CATEGORIES[valid_categories.index(selected)]
-        else:
-            print("❌ Invalid category. Please choose from the list above.")    
+FIELDNAMES = ['date', 'amount', 'category', 'description']  
    
 def add_expense():
-    date = getValidDate()
+    date = Utils.getValidDate()
     amount = float(input("Enter amount: "))
-    category = getvalidCategory()
+    category = Utils.getvalidCategory()
     description = input("Enter description: ").strip()
 
     with open(FILE_NAME, mode='a', newline='') as file:
@@ -47,7 +18,7 @@ def add_expense():
         if not os.path.isfile(FILE_NAME) or os.stat(FILE_NAME).st_size == 0:
             writer.writeheader()
         writer.writerow({'date': date, 'amount': amount, 'category': category, 'description': description})
-    print("Expense added successfully!\n")
+    print("✅ Expense added successfully!\n")
 
 
 def view_expenses():
@@ -68,7 +39,7 @@ def view_expenses():
     return expenses
 
 def filter_by_category():
-    target_category = getvalidCategory()
+    target_category = Utils.getvalidCategory()
     if not os.path.isfile(FILE_NAME) or os.stat(FILE_NAME).st_size == 0:
         print("No expenses found.")
         return []
@@ -89,7 +60,7 @@ def filter_by_category():
     return expenses
 
 def filter_by_date():
-    target_date = getValidDate()
+    target_date = Utils.getValidDate()
 
     if not os.path.isfile(FILE_NAME) or os.stat(FILE_NAME).st_size == 0:
         print("No expenses found.")
